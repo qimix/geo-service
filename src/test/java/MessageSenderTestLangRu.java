@@ -1,7 +1,6 @@
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.exceptions.misusing.MissingMethodInvocationException;
 import ru.netology.entity.Country;
 import ru.netology.entity.Location;
 import ru.netology.geo.GeoService;
@@ -14,7 +13,7 @@ import ru.netology.sender.MessageSenderImpl;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageSenderTest {
+public class MessageSenderTestLangRu {
     @Test
     public void testLocalizationService() {
         Location location = Mockito.mock(Location.class);

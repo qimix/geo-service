@@ -1,11 +1,14 @@
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.exceptions.misusing.MissingMethodInvocationException;
 import ru.netology.entity.Country;
 import ru.netology.entity.Location;
 import ru.netology.geo.GeoService;
 import ru.netology.geo.GeoServiceImpl;
 import ru.netology.i18n.LocalizationService;
 import ru.netology.i18n.LocalizationServiceImpl;
+import ru.netology.sender.MessageSender;
 import ru.netology.sender.MessageSenderImpl;
 
 import java.util.HashMap;
@@ -14,23 +17,20 @@ import java.util.Map;
 public class MessageSenderTest {
     @Test
     public void testLocalizationService() {
-        Country country = Mockito.mock(Country.class);
-        Mockito.when(Country.RUSSIA).thenReturn(Country.RUSSIA);
-
         Location location = Mockito.mock(Location.class);
-        Mockito.when(location).thenReturn(location);
         Mockito.when(location.getCountry()).thenReturn(Country.RUSSIA);
 
-        Map<String, String> headers = Mockito.mock(HashMap.class);
-        Mockito.when(headers.get("IP_ADDRESS_HEADER")).thenReturn("172.0.32.11");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("x-real-ip", "172.123.12.19");
 
-        LocalizationServiceImpl localizationService = Mockito.mock(LocalizationServiceImpl.class);
-        Mockito.when(localizationService.locale(Country.RUSSIA)).thenReturn("Добро пожаловать");
+        LocalizationService localizationService = Mockito.mock(LocalizationServiceImpl.class);
+        Mockito.when(localizationService.locale(location.getCountry())).thenReturn("Добро пожаловать");
 
-        GeoServiceImpl geoService = Mockito.mock(GeoServiceImpl.class);
-        Mockito.when(geoService.byIp(headers.get(headers.get("IP_ADDRESS_HEADER")))).thenReturn(location);
+        GeoService geoService = Mockito.mock(GeoServiceImpl.class);
+        Mockito.when(geoService.byIp(headers.get("x-real-ip"))).thenReturn(location);
 
-        MessageSenderImpl messageSender = new MessageSenderImpl(geoService,localizationService);
-        messageSender.send(headers);
+        MessageSender messageSender = new MessageSenderImpl(geoService, localizationService);
+        String actual = messageSender.send(headers);
+        Assert.assertEquals("Добро пожаловать", actual);
     }
 }
